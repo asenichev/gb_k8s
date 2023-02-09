@@ -1,0 +1,71 @@
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: postgres-pv
+spec:
+  capacity:
+    storage: 10Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Recycle
+  storageClassName: slow
+  mountOptions:
+    - hard
+    - nfsvers=4.1
+  nfs:
+    path: /postgres
+    server: 192.168.10.10
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+  namespace: postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: postgres
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+      - image: postgres:10.13
+        name: postgres
+        env:
+        - name: POSTGRES_USER
+          value: testuser
+        - name: POSTGRES_DB 
+          value: testdatabase
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: key-name 
+              key: key1
+        ports:
+        - containerPort: 5432
+          protocol: TCP
+        resources: 
+          requests:
+            cpu: 500m
+            memory: 100Mi
+          limits:
+            cpu: 500m
+            memory: 100Mi               
+#        volumeMounts:
+#        - name: config
+#          mountPath: /var/lib/postgresql/data
+#      volumes:
+#      - name: config
+#        configMap:
+#          name: my-configmap
+
