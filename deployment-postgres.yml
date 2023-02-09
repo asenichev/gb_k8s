@@ -1,4 +1,4 @@
-# for local network
+#
 ---
 apiVersion: v1
 kind: PersistentVolume
@@ -57,10 +57,10 @@ spec:
           protocol: TCP
         resources: 
           requests:
-            cpu: 500m
+            cpu: 300m
             memory: 100Mi
           limits:
-            cpu: 500m
+            cpu: 300m
             memory: 100Mi               
 #        volumeMounts:
 #        - name: config
